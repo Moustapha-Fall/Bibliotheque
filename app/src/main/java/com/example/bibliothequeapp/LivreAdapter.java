@@ -42,10 +42,10 @@ public class LivreAdapter extends
 
         if (livre.isDisponible()) {
             holder.tvDisponibilite.setText("Disponible");
-            holder.tvDisponibilite.setBackgroundColor(Color.parseColor("#2E7D32"));
+            holder.tvDisponibilite.setBackgroundResource(R.drawable.badge_disponible);
         } else {
             holder.tvDisponibilite.setText("Indisponible");
-            holder.tvDisponibilite.setBackgroundColor(Color.parseColor("#C62828"));
+            holder.tvDisponibilite.setBackgroundResource(R.drawable.badge_indisponible);
         }
 
         // Clic simple : ouvrir le détail du livre

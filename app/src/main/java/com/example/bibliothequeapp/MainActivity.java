@@ -2,6 +2,7 @@ package com.example.bibliothequeapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -81,12 +82,13 @@ public class MainActivity extends AppCompatActivity {
             if (AddEditActivity.MODE_ADD.equals(mode)) {
                 int nouvelId = listeLivres.size() + 1;
                 livre.setId(nouvelId);
-
                 listeLivres.add(livre);
+                Toast.makeText(this, "Livre ajouté avec succès !", Toast.LENGTH_SHORT).show();
 
             } else if (AddEditActivity.MODE_EDIT.equals(mode) &&
                     position >= 0) {
                 listeLivres.set(position, livre);
+                Toast.makeText(this, "Livre modifié avec succès !", Toast.LENGTH_SHORT).show();
             }
 
             livreAdapter.notifyDataSetChanged();
