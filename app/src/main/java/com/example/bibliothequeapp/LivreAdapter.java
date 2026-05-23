@@ -5,26 +5,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
+import java.util.List;
 
-public class LivreAdapter extends
-        RecyclerView.Adapter<LivreAdapter.LivreViewHolder> {
+public class LivreAdapter extends RecyclerView.Adapter<LivreAdapter.LivreViewHolder> {
 
-    private ArrayList<Livre> listeLivres;
+    public interface OnLivreClickListener {
+        void onLivreClick(Livre livre);
+        void onLivreLongClick(Livre livre, int position);
+    }
 
-    public LivreAdapter(ArrayList<Livre> listeLivres) {
+    private List<Livre> listeLivres;
+    private OnLivreClickListener listener;
+
+    public LivreAdapter(List<Livre> listeLivres, OnLivreClickListener listener) {
         this.listeLivres = listeLivres;
+        this.listener = listener;
     }
 
     @NonNull
     @Override
-    public LivreViewHolder onCreateViewHolder(@NonNull ViewGroup
-                                                      parent, int viewType) {
+    public LivreViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_livre, parent, false);
 
@@ -32,8 +36,7 @@ public class LivreAdapter extends
     }
 
     @Override
-    public void onBindViewHolder(@NonNull LivreViewHolder holder, int
-            position) {
+    public void onBindViewHolder(@NonNull LivreViewHolder holder, int position) {
         Livre livre = listeLivres.get(position);
 
         holder.tvTitreLivre.setText(livre.getTitre());
@@ -42,29 +45,27 @@ public class LivreAdapter extends
 
         if (livre.isDisponible()) {
             holder.tvDisponibilite.setText("Disponible");
-            holder.tvDisponibilite.setBackgroundResource(R.drawable.badge_disponible);
+            holder.tvDisponibilite.setBackgroundColor(Color.parseColor("#2E7D32"));
         } else {
             holder.tvDisponibilite.setText("Indisponible");
-            holder.tvDisponibilite.setBackgroundResource(R.drawable.badge_indisponible);
+            holder.tvDisponibilite.setBackgroundColor(Color.parseColor("#C62828"));
         }
 
-        // Clic simple : ouvrir le détail du livre
         holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(v.getContext(),
-                    DetailActivity.class);
-            intent.putExtra("livre", livre);
-            v.getContext().startActivity(intent);
+            if (listener != null) {
+                listener.onLivreClick(livre);
+            }
         });
 
-        // Clic long : ouvrir le formulaire en mode modification
         holder.itemView.setOnLongClickListener(v -> {
-            Intent intent = new Intent(v.getContext(),
-                    AddEditActivity.class);
-            intent.putExtra(AddEditActivity.EXTRA_MODE,
-                    AddEditActivity.MODE_EDIT);
-            intent.putExtra(AddEditActivity.EXTRA_LIVRE, livre);
-            intent.putExtra(AddEditActivity.EXTRA_POSITION,
-                    holder.getAdapterPosition());
+            if (listener != null) {
+                int currentPosition = holder.getAdapterPosition();
+
+                if (currentPosition != RecyclerView.NO_POSITION) {
+                    listener.onLivreLongClick(livre, currentPosition);
+                }
+            }
+
             return true;
         });
     }
@@ -74,8 +75,7 @@ public class LivreAdapter extends
         return listeLivres.size();
     }
 
-    public static class LivreViewHolder extends
-            RecyclerView.ViewHolder {
+    public static class LivreViewHolder extends RecyclerView.ViewHolder {
 
         TextView tvTitreLivre;
         TextView tvAuteurLivre;
@@ -88,8 +88,7 @@ public class LivreAdapter extends
             tvTitreLivre = itemView.findViewById(R.id.tvTitreLivre);
             tvAuteurLivre = itemView.findViewById(R.id.tvAuteurLivre);
             tvIsbnLivre = itemView.findViewById(R.id.tvIsbnLivre);
-            tvDisponibilite =
-                    itemView.findViewById(R.id.tvDisponibilite);
+            tvDisponibilite = itemView.findViewById(R.id.tvDisponibilite);
         }
     }
 }
